@@ -11,7 +11,7 @@
 
 function replace(str, url) {
   if (typeof url === 'function') return replace.iterate(str, url)
-  return all(str, url)
+  return replace.all(str, url)
 }
 
 /*!
@@ -34,10 +34,10 @@ replace.urls = /(url\(["']?)(([.]+\/)|(?:\/)|(?=#))(?!\/)/g
 replace.srcset = /(srcset=["'])(.*?)(["'])/g
 
 /* Function to include all parsing expressions */
-function all(str, url){
+replace.all = function(str, url){
   var replaced = str.replace(replace.rx, '$1' + url + '/$4')
   replaced = replaced.replace(replace.attrs, '$1' + url + '/$4')
-  replaced = replaced.replace(replace.styles, function(full, prefix, backgrounds, urls, suffix){
+  replaced = replaced.replace(replace.styles, function(full, prefix, prop, urls, suffix){
     return prefix + urls.replace(replace.urls, '$1' + url + '/') + suffix
   })
   return replaced.replace(replace.srcset, function(full, prefix, srcsets, suffix){
@@ -45,7 +45,7 @@ function all(str, url){
     var srcs = ''
     sizes.forEach(function(item, i){
       if (srcs)( srcs += ', ')
-      srcs += item.trim().replace(/^(\/)(?!\/)/, url + '/')
+      srcs += item.trim().replace(/^(([.]+\/)|(?:\/)|(?=#))(?!\/)/, url + '/')
     })
     return prefix + srcs + suffix
   })
@@ -56,6 +56,8 @@ function all(str, url){
  */
 
 replace.captureRx = /((href|src|codebase|cite|background|action|profile|formaction|icon|manifest|archive)=["'])((([.]+\/)|(?:\/)|(?:#))(?!\/)[a-zA-Z0-9._-]+)/g
+
+replace.captureAttrs = /((poster|longdesc|dynsrc|lowsrc|usemap)=["'])((([.]+\/)|(?:\/)|(?:#))(?!\/)[a-zA-Z0-9._-]+)/g
 
 /**
  * URL replacement using function iteration, this is handled slightly
@@ -68,7 +70,10 @@ replace.captureRx = /((href|src|codebase|cite|background|action|profile|formacti
  */
 
 replace.iterate = function(str, iterator) {
-  return str.replace(replace.captureRx, function(full, prefix, prop, url) {
+  var replaced = str.replace(replace.captureRx, function(full, prefix, prop, url) {
+    return prefix + iterator(url, prop)
+  })
+  return replaced.replace(replace.captureAttrs, function(full, prefix, prop, url) {
     return prefix + iterator(url, prop)
   })
 }

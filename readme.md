@@ -50,6 +50,7 @@ start with either `/` or any form of `../` pathing.
 | ---------- |
 | href       |
 | src        |
+| srcset     |  *** string url only
 | codebase   |
 | cite       |
 | background |
@@ -59,6 +60,18 @@ start with either `/` or any form of `../` pathing.
 | icon       |
 | manifest   |
 | archive    |
+| poster     |  
+| longdesc   |  
+| dynsrc     |  
+| lowsrc     |  
+| usemap     |  
 
+### Supported Styles
+
+| Style            |
+| ---------------- |
+| background       |  *** string url only
+| background-image |  *** string url only
+| filter           |  *** string url only
 
 [License](license)

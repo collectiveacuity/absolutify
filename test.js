@@ -122,6 +122,16 @@ describe('absolutify', function() {
       )
     , '<a href="http://www.example.com/./three">Heyo</a>' + ok
     )
+    
+    assert.strictEqual(
+      absolutify(
+        '<img lowsrc="/x1/logo.png">' + ok,
+        function(url, attr) {
+          return 'http://www.example.com' + url
+        }
+      ),
+      '<img lowsrc="http://www.example.com/x1/logo.png">' + ok
+    )
   })
 
   it('function replace anchor', function() {
