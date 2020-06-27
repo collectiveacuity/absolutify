@@ -24,10 +24,10 @@ function replace(str, url) {
 replace.rx = /((href|src|codebase|cite|background|action|profile|formaction|icon|manifest|archive)=["'])(([.]+\/)|(?:\/)|(?=#))(?!\/)/g
 
 /*! Parse more valid url attributes (to avoid long line jshint problem) */
-replace.extra = /((poster|longdesc|usemap)=["'])(([.]+\/)|(?:\/)|(?=#))(?!\/)/g
+replace.attrs = /((poster|longdesc|dynsrc|lowsrc|usemap)=["'])(([.]+\/)|(?:\/)|(?=#))(?!\/)/g
 
 /*! Parse urls in styles */
-replace.backgrounds = /((background|background-image):)(.*?)(;)/g
+replace.styles = /((background|background-image|filter):)(.*?)(;)/g
 replace.urls = /(url\(["']?)(([.]+\/)|(?:\/)|(?=#))(?!\/)/g
 
 /*! Parse urls in srcset */
@@ -36,8 +36,8 @@ replace.srcset = /(srcset=["'])(.*?)(["'])/g
 /* Function to include all parsing expressions */
 function all(str, url){
   let replaced = str.replace(replace.rx, '$1' + url + '/$4')
-  replaced = replaced.replace(replace.extra, '$1' + url + '/$4')
-  replaced = replaced.replace(replace.backgrounds, function(full, ...args){
+  replaced = replaced.replace(replace.attrs, '$1' + url + '/$4')
+  replaced = replaced.replace(replace.styles, function(full, ...args){
     return args[0] + args[2].replace(replace.urls, '$1' + url + '/') + args[3]
   })
   return replaced.replace(replace.srcset, function(full, ...args){
