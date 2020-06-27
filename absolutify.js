@@ -35,19 +35,19 @@ replace.srcset = /(srcset=["'])(.*?)(["'])/g
 
 /* Function to include all parsing expressions */
 function all(str, url){
-  let replaced = str.replace(replace.rx, '$1' + url + '/$4')
+  var replaced = str.replace(replace.rx, '$1' + url + '/$4')
   replaced = replaced.replace(replace.attrs, '$1' + url + '/$4')
-  replaced = replaced.replace(replace.styles, function(full, ...args){
-    return args[0] + args[2].replace(replace.urls, '$1' + url + '/') + args[3]
+  replaced = replaced.replace(replace.styles, function(full, prefix, backgrounds, urls, suffix){
+    return prefix + urls.replace(replace.urls, '$1' + url + '/') + suffix
   })
-  return replaced.replace(replace.srcset, function(full, ...args){
-    let sizes = args[1].split(',')
-    let srcs = ''
+  return replaced.replace(replace.srcset, function(full, prefix, srcsets, suffix){
+    var sizes = srcsets.split(',')
+    var srcs = ''
     sizes.forEach(function(item, i){
       if (srcs)( srcs += ', ')
       srcs += item.trim().replace(/^(\/)(?!\/)/, url + '/')
     })
-    return args[0] + srcs + args[2]
+    return prefix + srcs + suffix
   })
 }
 
